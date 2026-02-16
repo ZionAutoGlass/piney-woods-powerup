@@ -4,104 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piney Woods Power-Up!</title>
-    <meta name="integrity-cipher" content="fatal_7G_protocol">
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        :root { --forest-color: #2e7d32; --river-color: #0288d1; --well-face: "😎"; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; transition: background 1s; }
         
-        #game-world { 
-            width: 100vw; height: 100vh;
-            background-size: cover;
-            background-position: center;
-            transition: background-image 0.8s ease-in-out; /* Smooth fade between stages */
-            position: relative;
-        }
+        /* The World */
+        #game-world { width: 100vw; height: 100vh; background: var(--forest-color); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Character Sprites */
-        #captain-cullet { 
-            position: absolute; font-size: 70px; top: -100px; left: -100px;
-            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100;
-        }
+        /* The River */
+        #river { position: absolute; top: 40%; width: 100%; height: 60px; background: var(--river-color); box-shadow: 0 0 20px rgba(0,0,0,0.2); transition: all 0.5s; }
 
-        .pothole-monster {
-            position: absolute; font-size: 45px; cursor: pointer;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-            animation: shake 0.4s infinite alternate;
-        }
+        /* The Characters */
+        #well { font-size: 100px; z-index: 10; transition: transform 0.3s; }
+        #captain { position: absolute; font-size: 60px; top: -100px; transition: all 0.6s; z-index: 20; }
+        .monster { position: absolute; font-size: 50px; cursor: pointer; animation: shake 0.5s infinite; }
+        @keyframes shake { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
 
-        @keyframes shake {
-            from { transform: rotate(-5deg); }
-            to { transform: rotate(5deg); }
-        }
-
-        /* The Control Panel (HUD) */
-        #hud {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(44, 62, 80, 0.9); border: 3px solid #F0474C;
-            border-radius: 25px; padding: 15px; width: 90%; max-width: 450px;
-            color: white; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        input[type=range] { width: 100%; height: 15px; border-radius: 10px; accent-color: #F0474C; }
-        .fatal-text { color: #ff4757; font-weight: bold; font-size: 1.2rem; display: none; }
+        /* The HUD */
+        #hud { position: absolute; bottom: 30px; background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 20px; border: 3px solid #F0474C; width: 85%; max-width: 400px; text-align: center; }
+        input[type=range] { width: 100%; accent-color: #F0474C; }
+        #fire-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: orange; opacity: 0; pointer-events: none; transition: opacity 1s; z-index: 5; }
     </style>
 </head>
-<body onload="updateStage(10)">
+<body>
 
-<div id="game-world" id="world">
-    <div id="captain-cullet">💗</div>
+<div id="game-world" id="bg">
+    <div id="fire-overlay"></div>
+    <div id="river"></div>
+    <div id="captain">💗</div>
     
-    <div class="pothole-monster" style="top:35%; left:15%;" onclick="repair(this)">😡</div>
-    <div class="pothole-monster" style="top:50%; left:55%;" onclick="repair(this)">🤬</div>
-    <div class="pothole-monster" style="top:25%; left:75%;" onclick="repair(this)">👿</div>
+    <div id="well">🌳</div>
+    
+    <div class="monster" style="top:20%; left:10%;" onclick="fix(this)">😡</div>
+    <div class="monster" style="top:15%; left:70%;" onclick="fix(this)">🤬</div>
 
     <div id="hud">
-        <h3 id="stage-title">🌲 Stage 1: Healthy Aquifer</h3>
-        <input type="range" id="slider" min="0" max="100" value="10" oninput="updateStage(this.value)">
-        <p id="desc">Industrial Water Use: <span id="val">10</span>%</p>
-        <div id="fatal-alert" class="fatal-text">⚠️ FATAL LIMIT: WELLS ARE DRY ⚠️</div>
+        <h2 id="status">🌲 Healthy Woods</h2>
+        <input type="range" min="0" max="100" value="10" oninput="play(this.value)">
+        <p>Industrial Pumping: <span id="val">10</span>%</p>
     </div>
 </div>
 
 <script>
-    const world = document.getElementById('game-world');
-    const fatal_limit = 75; // The Zion "Fatal" Cipher
+    function play(v) {
+        document.getElementById('val').innerText = v;
+        const bg = document.getElementById('game-world');
+        const river = document.getElementById('river');
+        const well = document.getElementById('well');
+        const status = document.getElementById('status');
+        const fire = document.getElementById('fire-overlay');
 
-    function updateStage(val) {
-        document.getElementById('val').innerText = val;
-        const alertBox = document.getElementById('fatal-alert');
-        const title = document.getElementById('stage-title');
-
-        if (val < 40) {
-            world.style.backgroundImage = "url('background1.jpg')";
-            title.innerText = "🌲 Stage 1: Healthy Aquifer";
-            alertBox.style.display = "none";
-        } else if (val < fatal_limit) {
-            world.style.backgroundImage = "url('background2.jpg')";
-            title.innerText = "⚠️ Stage 2: Resource Warning";
-            alertBox.style.display = "none";
+        if (v < 40) {
+            bg.style.background = "#2e7d32"; // Green
+            river.style.height = "60px";
+            river.style.background = "#0288d1";
+            well.innerText = "🌳";
+            status.innerText = "🌲 Healthy Woods";
+            fire.style.opacity = "0";
+        } else if (v < 75) {
+            bg.style.background = "#8d6e63"; // Brownish
+            river.style.height = "15px";
+            river.style.background = "#5d4037";
+            well.innerText = "😟";
+            status.innerText = "⚠️ Warning: Water Low";
+            fire.style.opacity = "0";
         } else {
-            world.style.backgroundImage = "url('background3.jpg')";
-            title.innerText = "💀 Stage 3: Fatal Drawdown";
-            alertBox.style.display = "block";
-            console.log("Fatal Protocol Verified.");
+            bg.style.background = "#424242"; // Gray/Dead
+            river.style.height = "0px";
+            well.innerText = "💀";
+            status.innerText = "🔥 FATAL CRITICAL FIRE RISK";
+            fire.style.opacity = "0.4"; // The Fire Glow
         }
     }
 
-    function repair(monster) {
-        const hero = document.getElementById('captain-cullet');
-        const rect = monster.getBoundingClientRect();
-        
-        // Captain Cullet Flies to the rescue
-        hero.style.top = (rect.top - 50) + "px";
-        hero.style.left = (rect.left - 20) + "px";
-
-        setTimeout(() => {
-            monster.style.animation = "none";
-            monster.innerText = "✨";
-            document.getElementById('desc').innerText = "ROAD FIXED WITH RECYCLED GLASS!";
-        }, 700);
+    function fix(m) {
+        const c = document.getElementById('captain');
+        const r = m.getBoundingClientRect();
+        c.style.top = r.top + "px";
+        c.style.left = r.left + "px";
+        setTimeout(() => { m.innerText = "✨"; m.style.animation = "none"; }, 600);
     }
 </script>
-
 </body>
 </html>
