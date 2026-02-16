@@ -19,51 +19,19 @@
             overflow: hidden; color: white;
         }
 
-        /* Background Layers */
+        /* Background Layers - Updated for GitHub pathing */
         .bg-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
             transition: opacity 1.2s ease-in-out, transform 2s ease-in-out;
-            z-index: -1;
-            transform: scale(1);
+            z-index: 1; /* Moved above the black body */
         }
         
         .bg-layer.active { transform: scale(1.05); }
 
-        /* Interactive Hotspots */
-        .hotspot {
-            position: absolute; width: 50px; height: 50px;
-            cursor: help; z-index: 10; 
-            border: 2px solid var(--primary-gold);
-            border-radius: 50%; transition: all 0.3s;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.4);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
-        }
-        
-        .hotspot::after { content: '!'; color: var(--primary-gold); font-weight: bold; font-size: 1.2em; }
-
-        .tooltip {
-            visibility: hidden; background: rgba(0, 0, 0, 0.95);
-            color: white; padding: 18px; border-radius: 12px;
-            position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%);
-            width: 260px; border: 1px solid var(--primary-gold);
-            font-size: 0.9em; pointer-events: none; opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
-            line-height: 1.5;
-        }
-        
-        .hotspot:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
-        .tooltip strong { color: var(--primary-gold); display: block; margin-bottom: 5px; font-size: 1.1em; }
-
-        /* Dashboard UI */
+        /* Dashboard UI - Higher Z-Index to stay on top */
         .dashboard {
             position: absolute; bottom: 30px; left: 50%;
             transform: translateX(-50%); width: 90%; max-width: 550px;
@@ -71,69 +39,76 @@
             border-radius: 28px; border: 1px solid rgba(255,255,255,0.08);
             backdrop-filter: blur(20px); text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            z-index: 100;
         }
+
+        /* Hotspots */
+        .hotspot {
+            position: absolute; width: 50px; height: 50px;
+            cursor: help; z-index: 110; 
+            border: 2px solid var(--primary-gold);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+        }
+
+        .tooltip {
+            visibility: hidden; background: rgba(0, 0, 0, 0.95);
+            color: white; padding: 18px; border-radius: 12px;
+            position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%);
+            width: 260px; border: 1px solid var(--primary-gold);
+            opacity: 0; transition: all 0.4s;
+        }
+        
+        .hotspot:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
         .stats-row { display: flex; justify-content: space-around; margin-bottom: 25px; }
-        .stat-label { font-size: 0.7em; text-transform: uppercase; opacity: 0.5; letter-spacing: 2px; margin-bottom: 8px; }
         .stat-value { font-size: 1.6em; font-weight: 800; color: var(--primary-gold); }
 
-        input[type=range] {
-            width: 100%; margin: 20px 0; cursor: pointer;
-            appearance: none; background: transparent;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none; height: 28px; width: 28px; border-radius: 50%;
-            background: var(--primary-gold); cursor: pointer; margin-top: -10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.6); border: 2px solid #fff;
-        }
+        input[type=range] { width: 100%; margin: 20px 0; cursor: pointer; }
 
         .btn-reset {
-            background: transparent; color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.15);
+            background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3);
             padding: 12px 28px; border-radius: 30px; cursor: pointer;
-            font-size: 0.8em; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1.5px;
         }
-        .btn-reset:hover { background: var(--primary-gold); color: black; border-color: var(--primary-gold); font-weight: bold; }
 
-        #status-alert { 
-            margin: 15px 0; font-weight: 900; letter-spacing: 4px; font-size: 1.2em;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            transition: color 0.6s;
-        }
+        #status-alert { margin: 15px 0; font-weight: 900; letter-spacing: 4px; font-size: 1.2em; }
     </style>
 </head>
 <body onload="updateSim(1)">
 
-    <div id="bg-1" class="bg-layer" style="background-image: url('background1.jpg'); opacity: 1;"></div>
-    <div id="bg-2" class="bg-layer" style="background-image: url('background2.jpg'); opacity: 0;"></div>
-    <div id="bg-3" class="bg-layer" style="background-image: url('background3.jpg'); opacity: 0;"></div>
+    <div id="bg-1" class="bg-layer" style="background-image: url('./background1.jpg'); opacity: 1;"></div>
+    <div id="bg-2" class="bg-layer" style="background-image: url('./background2.jpg'); opacity: 0;"></div>
+    <div id="bg-3" class="bg-layer" style="background-image: url('./background3.jpg'); opacity: 0;"></div>
 
     <div class="hotspot" style="top: 38%; left: 45%;">
         <div class="tooltip">
             <strong>RURAL WATER GRANT</strong>
             Risk Factor: <span id="grant-risk">0%</span><br><br>
-            <small>If industrial use hits 100%, federal infrastructure priority shifts away from local residents.</small>
+            <small>Federal infrastructure priority shifts away from local residents during industrial peak use.</small>
         </div>
     </div>
 
     <div class="dashboard">
         <div class="stats-row">
             <div class="stat-box">
-                <div class="stat-label">Taxpayer Loss</div>
+                <div style="font-size: 0.7em; opacity: 0.5;">Taxpayer Loss</div>
                 <div id="tax-loss" class="stat-value">$0</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">Aquifer Level</div>
+                <div style="font-size: 0.7em; opacity: 0.5;">Aquifer Level</div>
                 <div id="aquifer-level" class="stat-value">100%</div>
             </div>
         </div>
 
-        <div id="status-alert">ECOSYSTEM STABLE</div>
-        
+        <div id="status-alert" style="color: var(--safe-green);">ECOSYSTEM STABLE</div>
         <input type="range" min="1" max="3" value="1" id="impactSlider" oninput="updateSim(this.value)">
-        
         <br>
         <button class="btn-reset" onclick="resetSim()">Restore Forest</button>
     </div>
@@ -158,42 +133,24 @@
             const risk = document.getElementById('grant-risk');
 
             if (val == 1) {
-                updateText(status, "ECOSYSTEM STABLE", "var(--safe-green)");
-                animateValue(tax, 0, 1000, "$");
-                animateValue(aquifer, 100, 1000, "", "%");
+                status.innerText = "ECOSYSTEM STABLE";
+                status.style.color = "var(--safe-green)";
+                tax.innerText = "$0";
+                aquifer.innerText = "100%";
                 risk.innerText = "0%";
             } else if (val == 2) {
-                updateText(status, "CRITICAL DEPLETION", "var(--warning-orange)");
-                animateValue(tax, 4100000, 1000, "$");
-                animateValue(aquifer, 42, 1000, "", "%");
+                status.innerText = "CRITICAL DEPLETION";
+                status.style.color = "var(--warning-orange)";
+                tax.innerText = "$4,100,000";
+                aquifer.innerText = "42%";
                 risk.innerText = "50%";
             } else if (val == 3) {
-                updateText(status, "SYSTEM COLLAPSE", "var(--danger-red)");
-                animateValue(tax, 8200000, 1000, "$");
-                animateValue(aquifer, 7, 1000, "", "%");
+                status.innerText = "SYSTEM COLLAPSE";
+                status.style.color = "var(--danger-red)";
+                tax.innerText = "$8,200,000";
+                aquifer.innerText = "7%";
                 risk.innerText = "100%";
             }
-        }
-
-        function updateText(el, text, color) {
-            el.innerText = text;
-            el.style.color = color;
-        }
-
-        function animateValue(obj, end, duration, prefix = "", suffix = "") {
-            let start = parseInt(obj.innerText.replace(/[$,%]/g, ""));
-            if (isNaN(start)) start = 0;
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const currentVal = Math.floor(progress * (end - start) + start);
-                obj.innerHTML = prefix + currentVal.toLocaleString() + suffix;
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
         }
 
         function resetSim() {
