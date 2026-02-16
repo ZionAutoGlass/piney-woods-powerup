@@ -3,103 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piney Woods Power-Up!</title>
-    <meta name="integrity-cipher" content="fatal_7G_protocol">
+    <title>Zion Piney Woods Portal</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
         #game-world { 
             width: 100vw; height: 100vh;
+            /* Use your original photo here */
+            background-image: url('background1.jpg'); 
             background-size: cover;
             background-position: center;
-            transition: background-image 0.8s ease-in-out; /* Smooth fade between stages */
+            transition: filter 0.8s ease-in-out;
             position: relative;
         }
 
-        /* Character Sprites */
-        #captain-cullet { 
-            position: absolute; font-size: 70px; top: -100px; left: -100px;
-            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100;
+        /* The River Overlay - it shrinks as you move the bar */
+        #river-dry {
+            position: absolute; bottom: 0; width: 100%; height: 35%;
+            background: rgba(0,0,0,0.4); /* Makes the river look muddy/dried */
+            opacity: 0; transition: opacity 0.5s;
         }
 
-        .pothole-monster {
-            position: absolute; font-size: 45px; cursor: pointer;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-            animation: shake 0.4s infinite alternate;
-        }
-
-        @keyframes shake {
-            from { transform: rotate(-5deg); }
-            to { transform: rotate(5deg); }
-        }
-
-        /* The Control Panel (HUD) */
         #hud {
             position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(44, 62, 80, 0.9); border: 3px solid #F0474C;
-            border-radius: 25px; padding: 15px; width: 90%; max-width: 450px;
-            color: white; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.85); border: 3px solid #F0474C;
+            border-radius: 20px; padding: 15px; width: 85%; max-width: 400px;
+            color: white; text-align: center;
         }
 
-        input[type=range] { width: 100%; height: 15px; border-radius: 10px; accent-color: #F0474C; }
-        .fatal-text { color: #ff4757; font-weight: bold; font-size: 1.2rem; display: none; }
+        input[type=range] { width: 100%; accent-color: #F0474C; height: 25px; }
+        .status-text { font-weight: bold; font-size: 1.2rem; }
     </style>
 </head>
-<body onload="updateStage(10)">
+<body>
 
-<div id="game-world" id="world">
-    <div id="captain-cullet">💗</div>
-    
-    <div class="pothole-monster" style="top:35%; left:15%;" onclick="repair(this)">😡</div>
-    <div class="pothole-monster" style="top:50%; left:55%;" onclick="repair(this)">🤬</div>
-    <div class="pothole-monster" style="top:25%; left:75%;" onclick="repair(this)">👿</div>
-
+<div id="game-world" id="bg">
+    <div id="river-dry"></div>
     <div id="hud">
-        <h3 id="stage-title">🌲 Stage 1: Healthy Aquifer</h3>
-        <input type="range" id="slider" min="0" max="100" value="10" oninput="updateStage(this.value)">
-        <p id="desc">Industrial Water Use: <span id="val">10</span>%</p>
-        <div id="fatal-alert" class="fatal-text">⚠️ FATAL LIMIT: WELLS ARE DRY ⚠️</div>
+        <p id="status" class="status-text">🌲 Healthy Piney Woods</p>
+        <input type="range" min="0" max="100" value="10" oninput="transformWorld(this.value)">
+        <p>Industrial Pumping: <span id="val">10</span>%</p>
     </div>
 </div>
 
 <script>
-    const world = document.getElementById('game-world');
-    const fatal_limit = 75; // The Zion "Fatal" Cipher
+    function transformWorld(v) {
+        document.getElementById('val').innerText = v;
+        const bg = document.getElementById('bg');
+        const river = document.getElementById('river-dry');
+        const status = document.getElementById('status');
 
-    function updateStage(val) {
-        document.getElementById('val').innerText = val;
-        const alertBox = document.getElementById('fatal-alert');
-        const title = document.getElementById('stage-title');
-
-        if (val < 40) {
-            world.style.backgroundImage = "url('background1.jpg')";
-            title.innerText = "🌲 Stage 1: Healthy Aquifer";
-            alertBox.style.display = "none";
-        } else if (val < fatal_limit) {
-            world.style.backgroundImage = "url('background2.jpg')";
-            title.innerText = "⚠️ Stage 2: Resource Warning";
-            alertBox.style.display = "none";
+        if (v < 40) {
+            // STAGE 1: Normal
+            bg.style.filter = "saturate(1) hue-rotate(0deg) brightness(1)";
+            river.style.opacity = "0";
+            status.innerText = "🌲 Healthy Piney Woods";
+            status.style.color = "#4CAF50";
+        } else if (v < 75) {
+            // STAGE 2: Dry / Fall Colors
+            // We shift the "Green" to "Orange/Yellow" and dim it
+            bg.style.filter = "saturate(0.8) hue-rotate(-40deg) brightness(0.9)";
+            river.style.opacity = "0.5"; // River starts looking muddy
+            status.innerText = "⚠️ Warning: Woods Drying Up";
+            status.style.color = "#FFC107";
         } else {
-            world.style.backgroundImage = "url('background3.jpg')";
-            title.innerText = "💀 Stage 3: Fatal Drawdown";
-            alertBox.style.display = "block";
-            console.log("Fatal Protocol Verified.");
+            // STAGE 3: Dead / Fatal
+            // We turn it gray/dark and "Dead"
+            bg.style.filter = "grayscale(1) brightness(0.6) contrast(1.2)";
+            river.style.opacity = "1"; // River looks like a dry crack
+            status.innerText = "💀 FATAL LIMIT REACHED";
+            status.style.color = "#F44336";
         }
-    }
-
-    function repair(monster) {
-        const hero = document.getElementById('captain-cullet');
-        const rect = monster.getBoundingClientRect();
-        
-        // Captain Cullet Flies to the rescue
-        hero.style.top = (rect.top - 50) + "px";
-        hero.style.left = (rect.left - 20) + "px";
-
-        setTimeout(() => {
-            monster.style.animation = "none";
-            monster.innerText = "✨";
-            document.getElementById('desc').innerText = "ROAD FIXED WITH RECYCLED GLASS!";
-        }, 700);
     }
 </script>
 
