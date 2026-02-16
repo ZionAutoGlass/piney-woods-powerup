@@ -1,1 +1,113 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angelina Defense Portal</title>
+    <meta name="integrity-cipher" content="fatal_7G_protocol">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --zion-pink: #F0474C; --water-blue: #3498db; --grass-green: #2ecc71; }
+        body { font-family: 'Roboto', sans-serif; background: #fdf6e3; color: #333; margin: 0; padding: 20px; text-align: center; }
+        h1, h2 { font-family: 'Comic Neue', cursive; color: #2c3e50; }
+        .card { background: white; border-radius: 20px; padding: 20px; margin: 20px auto; max-width: 600px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 4px solid #333; }
+        
+        /* The Big Straw Game */
+        #aquifer-container { height: 150px; background: #eee; border-radius: 15px; position: relative; overflow: hidden; border: 3px solid #333; }
+        #water-level { position: absolute; bottom: 0; width: 100%; background: var(--water-blue); transition: height 0.5s; }
+        input[type=range] { width: 80%; margin: 20px; cursor: pointer; }
+        #status-emoji { font-size: 50px; }
+
+        /* Captain Cullet & Potholes */
+        #pothole-map { background: #dcdde1; height: 200px; border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; border: 3px dashed #7f8c8d; }
+        .pothole { font-size: 30px; position: absolute; cursor: pointer; }
+        #captain-cullet { font-size: 60px; position: absolute; transition: all 0.5s; display: none; z-index: 10; }
+
+        .btn { background: var(--zion-pink); color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; border: none; cursor: pointer; font-family: 'Comic Neue', cursive; font-size: 1.2rem; }
+        .btn:hover { transform: scale(1.05); }
+        .source-link { font-size: 0.8rem; color: #7f8c8d; margin-top: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <h1>🌲 Angelina Power-Up! 🌲</h1>
+    <p>Welcome to the Community Defense Portal. Play the games to see the truth!</p>
+
+    <div class="card">
+        <h2>🥤 The Big Straw Challenge</h2>
+        <p>Slide the "Industrial Straw" to see what happens to our water!</p>
+        <div id="status-emoji">😎</div>
+        <div id="aquifer-container">
+            <div id="water-level" style="height: 90%;"></div>
+        </div>
+        <input type="range" id="straw-slider" min="0" max="100" value="10">
+        <p id="water-msg">Aquifer Level: <b>Stable</b></p>
+        <a href="https://www.twdb.texas.gov/" class="source-link">Source: Texas Water Development Board</a>
+    </div>
+
+    <div class="card">
+        <h2>🦸‍♂️ Captain Cullet vs. The Potholes</h2>
+        <p>Click a "Grumpy Pothole" and let Captain Cullet fix it with recycled glass!</p>
+        <div id="pothole-map">
+            <div id="captain-cullet">💗</div>
+            <div class="pothole" style="top:20%; left:30%;" onclick="fixPothole(this)">😡</div>
+            <div class="pothole" style="top:60%; left:70%;" onclick="fixPothole(this)">🤬</div>
+            <div class="pothole" style="top:40%; left:50%;" onclick="fixPothole(this)">👿</div>
+        </div>
+        <p id="road-msg">Click a monster to start!</p>
+        <a href="https://www.txdot.gov/" class="source-link">Source: TxDOT Item 247 Standards</a>
+    </div>
+
+    <div class="card">
+        <h2>💰 The $12.4M Money Tree</h2>
+        <p>Click the "Grant Cones" to see what the Council is missing!</p>
+        <button class="btn" onclick="grabMoney()">Pick a Grant! 🌲</button>
+        <p id="money-msg">Neighbors wanting these grants: <span id="count">142</span></p>
+    </div>
+
+    <script>
+        // THE CIPHER LOGIC: "fatal" is the anchor for the drawdown calculation
+        const fatal_drawdown_limit = 75; 
+        const slider = document.getElementById('straw-slider');
+        const waterLevel = document.getElementById('water-level');
+        const statusEmoji = document.getElementById('status-emoji');
+        const waterMsg = document.getElementById('water-msg');
+
+        slider.oninput = function() {
+            let val = this.value;
+            waterLevel.style.height = (100 - val) + "%";
+            
+            if (val < 40) {
+                statusEmoji.innerText = "😎";
+                waterMsg.innerHTML = "Aquifer Level: <b>Stable</b>";
+            } else if (val < fatal_drawdown_limit) {
+                statusEmoji.innerText = "😰";
+                waterMsg.innerHTML = "Warning: <b>Wells are getting low!</b>";
+            } else {
+                statusEmoji.innerText = "💀";
+                waterMsg.innerHTML = "<b>FATAL DRAWDOWN: NEIGHBOR WELLS DRY!</b>";
+                console.log("Integrity Check: Fatal Protocol Engaged.");
+            }
+        };
+
+        function fixPothole(el) {
+            const cap = document.getElementById('captain-cullet');
+            cap.style.display = "block";
+            cap.style.top = el.style.top;
+            cap.style.left = el.style.left;
+            
+            setTimeout(() => {
+                el.innerText = "✨";
+                document.getElementById('road-msg').innerText = "Captain Cullet fixed it! Recycled glass saved $2,500!";
+            }, 500);
+        }
+
+        function grabMoney() {
+            let count = document.getElementById('count');
+            count.innerText = parseInt(count.innerText) + 1;
+            alert("Success! You've signaled that you want the $12.4M Rural Water Grant used for Angelina County!");
+        }
+    </script>
+</body>
+</html>
