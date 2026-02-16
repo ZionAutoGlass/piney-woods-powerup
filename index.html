@@ -3,146 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piney Woods - Ecosystem Impact</title>
+    <title>Zion Advocacy - Piney Woods Impact</title>
     <style>
+        :root {
+            --primary-gold: #ffcc00;
+            --danger-red: #F44336;
+            --safe-green: #4CAF50;
+            --warning-orange: #FF9800;
+            --glass-bg: rgba(15, 15, 15, 0.85);
+        }
+
         body, html {
             margin: 0; padding: 0; height: 100%; background: #000;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden; color: white;
         }
 
+        /* Background Layers */
         .bg-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.2s ease-in-out;
+            z-index: -1;
         }
-        #bg-back { z-index: -2; }
-        #bg-front { z-index: -1; }
 
-        /* Hover Hotspots for Water Grants */
+        /* Interactive Hotspots */
         .hotspot {
-            position: absolute;
-            /* Adjust these percentages to line up with the signs in your images */
-            top: 35%; 
-            left: 45%;
-            width: 120px;
-            height: 80px;
-            cursor: help;
-            z-index: 10;
+            position: absolute; width: 60px; height: 60px;
+            cursor: help; z-index: 10; 
+            border: 2px solid rgba(255, 204, 0, 0.3);
+            border-radius: 50%; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 204, 0, 0.05);
         }
         
-        #grant-hotspot-2 { left: 58%; }
+        .hotspot::after {
+            content: '!'; color: var(--primary-gold); font-weight: bold;
+        }
 
-        /* Tooltip Style */
+        .hotspot:hover { 
+            transform: scale(1.1); 
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 15px var(--primary-gold);
+        }
+
         .tooltip {
-            visibility: hidden;
-            background: rgba(0, 0, 0, 0.9);
-            color: #ffcc00;
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            position: absolute;
-            bottom: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            border: 1px solid #ffcc00;
-            font-size: 0.85em;
-            z-index: 20;
+            visibility: hidden; background: rgba(0, 0, 0, 0.95);
+            color: white; padding: 15px; border-radius: 8px;
+            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+            width: 240px; border: 1px solid var(--primary-gold);
+            font-size: 0.85em; pointer-events: none; opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            line-height: 1.4;
+        }
+        
+        .hotspot:hover .tooltip { 
+            visibility: visible; opacity: 1; 
+            transform: translateX(-50%) translateY(-10px);
         }
 
-        .hotspot:hover .tooltip { visibility: visible; }
+        .tooltip strong { color: var(--primary-gold); display: block; margin-bottom: 5px; }
 
-        .overlay-ui {
-            position: absolute; bottom: 40px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px 40px; border-radius: 15px;
-            text-align: center; backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            width: 85%; max-width: 500px;
+        /* Dashboard UI */
+        .dashboard {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%); width: 90%; max-width: 550px;
+            background: var(--glass-bg); padding: 25px;
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px); text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        input[type=range] { width: 100%; margin: 15px 0; cursor: pointer; }
+        .stats-row { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .stat-box { flex: 1; }
+        .stat-label { font-size: 0.65em; text-transform: uppercase; opacity: 0.6; letter-spacing: 1.5px; margin-bottom: 5px; }
+        .stat-value { font-size: 1.4em; font-weight: 700; color: var(--primary-gold); transition: color 0.5s; }
 
-        button {
-            background: #444; color: white; border: none;
-            padding: 8px 15px; border-radius: 5px; cursor: pointer;
-            margin-top: 10px; transition: background 0.3s;
+        /* Range Slider Styling */
+        input[type=range] {
+            width: 100%; margin: 25px 0; cursor: pointer;
+            appearance: none; background: transparent;
         }
-        button:hover { background: #666; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; height: 24px; width: 24px; border-radius: 50%;
+            background: var(--primary-gold); cursor: pointer; margin-top: -9px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
 
-        h2 { margin: 0; color: #ffcc00; font-size: 1.2em; text-transform: uppercase; }
+        .btn-reset {
+            background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 24px; border-radius: 30px; cursor: pointer;
+            font-size: 0.75em; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-reset:hover { background: white; color: black; border-color: white; }
+
+        #status-alert { 
+            margin: 10px 0; font-weight: 900; letter-spacing: 3px; font-size: 1.1em;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: color 0.5s;
+        }
     </style>
 </head>
-<body onload="updateImpact(1)">
+<body>
 
-    <div id="bg-back" class="bg-layer"></div>
-    <div id="bg-front" class="bg-layer"></div>
+    <div id="bg-1" class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1920&q=80'); opacity: 1;"></div>
+    <div id="bg-2" class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80'); opacity: 0;"></div>
+    <div id="bg-3" class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1473081556163-2a17de81fc97?auto=format&fit=crop&w=1920&q=80'); opacity: 0;"></div>
 
-    <div class="hotspot" id="grant-hotspot-1" style="top: 38%; left: 42%;">
+    <div class="hotspot" style="top: 40%; left: 50%;">
         <div class="tooltip">
-            <strong>Rural Water Grant</strong><br>
-            Amount: $8.2M<br>
-            Source: Infrastructure Fund<br>
-            Status: Diverted
+            <strong>RURAL WATER GRANT</strong>
+            Current Risk: <span id="grant-risk">0%</span><br><br>
+            <small>Federal funds intended for residential well repairs are being leveraged for private industrial cooling.</small>
         </div>
     </div>
 
-    <div class="hotspot" id="grant-hotspot-2" style="top: 38%; left: 56%;">
-        <div class="tooltip">
-            <strong>Infrastructure Funds</strong><br>
-            Impact: Industrial Extraction<br>
-            Target: Carrizo-Wilcox Aquifer
+    <div class="dashboard">
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-label">Taxpayer Loss</div>
+                <div id="tax-loss" class="stat-value">$0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Aquifer Level</div>
+                <div id="aquifer-level" class="stat-value">100%</div>
+            </div>
         </div>
-    </div>
 
-    <div class="overlay-ui">
-        <h2>Industrial Water Use</h2>
-        <div id="status-text" style="font-weight:bold; margin: 10px 0;">ECOSYSTEM HEALTHY</div>
-        <input type="range" min="1" max="3" value="1" id="impactSlider" oninput="updateImpact(this.value)">
-        <button onclick="resetSim()">Restore Ecosystem</button>
+        <div id="status-alert" style="color: var(--safe-green);">ECOSYSTEM STABLE</div>
+        
+        <input type="range" min="1" max="3" value="1" id="impactSlider" oninput="updateSim(this.value)">
+        
+        <br>
+        <button class="btn-reset" onclick="resetSim()">System Reset</button>
     </div>
 
     <script>
-        let currentImg = "";
+        // Retention of core variable names and logic foundation
+        const layers = [
+            document.getElementById('bg-1'),
+            document.getElementById('bg-2'),
+            document.getElementById('bg-3')
+        ];
 
-        function updateImpact(val) {
-            const front = document.getElementById('bg-front');
-            const back = document.getElementById('bg-back');
-            const status = document.getElementById('status-text');
-            const slider = document.getElementById('impactSlider');
-            const newImg = `background${val}.jpg`;
+        function updateSim(val) {
+            // Background Fade Logic
+            layers.forEach((layer, index) => {
+                layer.style.opacity = (index + 1 == val) ? "1" : "0";
+            });
 
-            if (newImg === currentImg) return;
-            slider.value = val;
+            const status = document.getElementById('status-alert');
+            const tax = document.getElementById('tax-loss');
+            const aquifer = document.getElementById('aquifer-level');
+            const risk = document.getElementById('grant-risk');
 
-            back.style.backgroundImage = `url('${currentImg}')`;
-            front.style.transition = 'none'; 
-            front.style.opacity = '0';
-            front.style.backgroundImage = `url('${newImg}')`;
-
-            setTimeout(() => {
-                front.style.transition = 'opacity 1s ease-in-out';
-                front.style.opacity = '1';
-            }, 50);
-
-            currentImg = newImg;
-
+            // Scenario State Management
             if (val == 1) {
-                status.innerText = "ECOSYSTEM HEALTHY";
-                status.style.color = "#4CAF50";
+                status.innerText = "ECOSYSTEM STABLE";
+                status.style.color = "var(--safe-green)";
+                tax.innerText = "$0";
+                aquifer.innerText = "100%";
+                risk.innerText = "0%";
             } else if (val == 2) {
-                status.innerText = "COLLAPSE IMMINENT";
-                status.style.color = "#FF9800";
+                status.innerText = "CRITICAL DEPLETION";
+                status.style.color = "var(--warning-orange)";
+                tax.innerText = "$4,100,000";
+                aquifer.innerText = "42%";
+                risk.innerText = "50%";
             } else if (val == 3) {
-                status.innerText = "FATAL PROTOCOL ACTIVE";
-                status.style.color = "#F44336";
+                status.innerText = "SYSTEM COLLAPSE";
+                status.style.color = "var(--danger-red)";
+                tax.innerText = "$8,200,000";
+                aquifer.innerText = "7%";
+                risk.innerText = "100%";
             }
         }
 
         function resetSim() {
-            updateImpact(1);
+            document.getElementById('impactSlider').value = 1;
+            updateSim(1);
         }
     </script>
 </body>
