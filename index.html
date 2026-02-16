@@ -10,104 +10,63 @@
             --danger-red: #F44336;
             --safe-green: #4CAF50;
             --warning-orange: #FF9800;
-            --glass-bg: rgba(10, 10, 10, 0.8);
+            --glass-bg: rgba(10, 10, 10, 0.85);
         }
 
         body, html {
-            margin: 0; padding: 0; height: 100%; background: #000;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; color: white;
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%; 
+            background-color: #000;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
         }
 
-        /* Background Layers - Updated for GitHub pathing */
+        /* Background Layers */
         .bg-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; 
+            width: 100vw; height: 100vh;
             background-size: cover; 
-            background-position: center;
+            background-position: center center;
             background-repeat: no-repeat;
-            transition: opacity 1.2s ease-in-out, transform 2s ease-in-out;
-            z-index: 1; /* Moved above the black body */
+            transition: opacity 1.2s ease-in-out;
+            z-index: 1; 
         }
-        
-        .bg-layer.active { transform: scale(1.05); }
 
-        /* Dashboard UI - Higher Z-Index to stay on top */
         .dashboard {
-            position: absolute; bottom: 30px; left: 50%;
-            transform: translateX(-50%); width: 90%; max-width: 550px;
-            background: var(--glass-bg); padding: 30px;
-            border-radius: 28px; border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(20px); text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-            z-index: 100;
+            position: absolute; bottom: 40px; left: 50%;
+            transform: translateX(-50%); width: 85%; max-width: 500px;
+            background: var(--glass-bg); padding: 25px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px); text-align: center;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Hotspots */
-        .hotspot {
-            position: absolute; width: 50px; height: 50px;
-            cursor: help; z-index: 110; 
-            border: 2px solid var(--primary-gold);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
-        }
-
-        .tooltip {
-            visibility: hidden; background: rgba(0, 0, 0, 0.95);
-            color: white; padding: 18px; border-radius: 12px;
-            position: absolute; bottom: 140%; left: 50%; transform: translateX(-50%);
-            width: 260px; border: 1px solid var(--primary-gold);
-            opacity: 0; transition: all 0.4s;
-        }
-        
-        .hotspot:hover .tooltip { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
-
-        .stats-row { display: flex; justify-content: space-around; margin-bottom: 25px; }
-        .stat-value { font-size: 1.6em; font-weight: 800; color: var(--primary-gold); }
-
-        input[type=range] { width: 100%; margin: 20px 0; cursor: pointer; }
-
-        .btn-reset {
-            background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3);
-            padding: 12px 28px; border-radius: 30px; cursor: pointer;
-        }
-
-        #status-alert { margin: 15px 0; font-weight: 900; letter-spacing: 4px; font-size: 1.2em; }
+        .stat-value { font-size: 1.5em; font-weight: bold; color: var(--primary-gold); }
+        input[type=range] { width: 100%; margin: 20px 0; cursor: pointer; accent-color: var(--primary-gold); }
+        .btn-reset { background: #333; color: #fff; border: 1px solid #444; padding: 10px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .btn-reset:hover { background: #fff; color: #000; }
     </style>
 </head>
 <body onload="updateSim(1)">
 
-    <div id="bg-1" class="bg-layer" style="background-image: url('./background1.jpg'); opacity: 1;"></div>
-    <div id="bg-2" class="bg-layer" style="background-image: url('./background2.jpg'); opacity: 0;"></div>
-    <div id="bg-3" class="bg-layer" style="background-image: url('./background3.jpg'); opacity: 0;"></div>
-
-    <div class="hotspot" style="top: 38%; left: 45%;">
-        <div class="tooltip">
-            <strong>RURAL WATER GRANT</strong>
-            Risk Factor: <span id="grant-risk">0%</span><br><br>
-            <small>Federal infrastructure priority shifts away from local residents during industrial peak use.</small>
-        </div>
-    </div>
+    <div id="bg-state-1" class="bg-layer" style="background-image: url('background1.jpg'); opacity: 1;"></div>
+    <div id="bg-state-2" class="bg-layer" style="background-image: url('background3.jpg'); opacity: 0;"></div>
+    <div id="bg-state-3" class="bg-layer" style="background-image: url('background2.jpg'); opacity: 0;"></div>
 
     <div class="dashboard">
-        <div class="stats-row">
-            <div class="stat-box">
-                <div style="font-size: 0.7em; opacity: 0.5;">Taxpayer Loss</div>
+        <div style="display: flex; justify-content: space-around; margin-bottom: 10px;">
+            <div>
+                <div style="font-size: 0.7em; opacity: 0.6; text-transform: uppercase;">Taxpayer Loss</div>
                 <div id="tax-loss" class="stat-value">$0</div>
             </div>
-            <div class="stat-box">
-                <div style="font-size: 0.7em; opacity: 0.5;">Aquifer Level</div>
+            <div>
+                <div style="font-size: 0.7em; opacity: 0.6; text-transform: uppercase;">Aquifer Level</div>
                 <div id="aquifer-level" class="stat-value">100%</div>
             </div>
         </div>
 
-        <div id="status-alert" style="color: var(--safe-green);">ECOSYSTEM STABLE</div>
+        <div id="status-alert" style="color: var(--safe-green); font-weight: bold; margin-bottom: 10px; letter-spacing: 1px;">ECOSYSTEM STABLE</div>
         <input type="range" min="1" max="3" value="1" id="impactSlider" oninput="updateSim(this.value)">
         <br>
         <button class="btn-reset" onclick="resetSim()">Restore Forest</button>
@@ -115,41 +74,36 @@
 
     <script>
         const layers = [
-            document.getElementById('bg-1'),
-            document.getElementById('bg-2'),
-            document.getElementById('bg-3')
+            document.getElementById('bg-state-1'),
+            document.getElementById('bg-state-2'),
+            document.getElementById('bg-state-3')
         ];
 
         function updateSim(val) {
+            // Fade the appropriate layer
             layers.forEach((layer, index) => {
-                const isActive = (index + 1 == val);
-                layer.style.opacity = isActive ? "1" : "0";
-                layer.classList.toggle('active', isActive);
+                layer.style.opacity = (index + 1 == val) ? "1" : "0";
             });
 
             const status = document.getElementById('status-alert');
             const tax = document.getElementById('tax-loss');
             const aquifer = document.getElementById('aquifer-level');
-            const risk = document.getElementById('grant-risk');
 
             if (val == 1) {
                 status.innerText = "ECOSYSTEM STABLE";
                 status.style.color = "var(--safe-green)";
                 tax.innerText = "$0";
                 aquifer.innerText = "100%";
-                risk.innerText = "0%";
             } else if (val == 2) {
                 status.innerText = "CRITICAL DEPLETION";
                 status.style.color = "var(--warning-orange)";
                 tax.innerText = "$4,100,000";
                 aquifer.innerText = "42%";
-                risk.innerText = "50%";
             } else if (val == 3) {
                 status.innerText = "SYSTEM COLLAPSE";
                 status.style.color = "var(--danger-red)";
                 tax.innerText = "$8,200,000";
                 aquifer.innerText = "7%";
-                risk.innerText = "100%";
             }
         }
 
